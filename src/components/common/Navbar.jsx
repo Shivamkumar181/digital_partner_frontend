@@ -358,7 +358,6 @@
 // export default Navbar;
 
 
-
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -407,44 +406,6 @@ const NotificationBell = ({ token }) => {
     } catch {}
   };
 
-  const markRead = async (id) => {
-    try {
-      await axios.put(
-        `/api/notifications/${id}/read`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      setNotifications((prev) =>
-        prev.map((n) => (n._id === id ? { ...n, read: true } : n)),
-      );
-    } catch {}
-  };
-
-  const markAllRead = async () => {
-    try {
-      await axios.put(
-        "/api/notifications/read-all",
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    } catch {}
-  };
-
-  const typeIcon = {
-    contribution_submitted: "📝",
-    contribution_approved: "✅",
-    contribution_rejected: "❌",
-    payment_received: "💰",
-    message: "💬",
-    certificate_generated: "🎓",
-    project_updated: "📢",
-  };
-
   return (
     <div className="relative" ref={bellRef}>
       <button
@@ -462,7 +423,6 @@ const NotificationBell = ({ token }) => {
             d="M15 17h5l-1.4-1.4A2 2 0 0118 14V11a6 6 0 00-4-5.6V5a2 2 0 10-4 0v.3A6 6 0 006 11v3c0 .5-.2 1-.6 1.4L4 17h5"
           />
         </svg>
-
         {unread > 0 && (
           <span className="absolute top-0 right-0 bg-gradient-to-r from-pink-500 to-red-500 text-xs rounded-full px-1 text-white">
             {unread}
@@ -481,7 +441,6 @@ const NotificationBell = ({ token }) => {
             <div className="px-4 py-3 border-b border-gray-800 text-sm font-semibold text-white">
               Notifications
             </div>
-
             <div className="max-h-80 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-6 text-center text-gray-500">
@@ -522,7 +481,6 @@ const Navbar = () => {
   const searchRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target))
@@ -536,7 +494,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, [mobileOpen]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
@@ -596,7 +553,6 @@ const Navbar = () => {
     <nav className="bg-black/90 backdrop-blur-lg border-b border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-center h-16 md:h-20">
-          
           {/* LOGO */}
           <Link to="/" className="flex items-center gap-3 z-50">
             <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
@@ -604,7 +560,7 @@ const Navbar = () => {
             </h1>
           </Link>
 
-          {/* DESKTOP NAV LINKS - Hidden on mobile */}
+          {/* DESKTOP NAV LINKS */}
           <div className="hidden md:flex gap-2">
             {navLinks.map((link) => (
               <Link
@@ -621,7 +577,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* DESKTOP RIGHT SECTION - Hidden on mobile */}
+          {/* DESKTOP RIGHT SECTION */}
           <div className="hidden md:flex items-center gap-3">
             {user && token && (
               <div className="relative" ref={searchRef}>
@@ -729,7 +685,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* MOBILE MENU BUTTON - Visible only on mobile */}
+          {/* MOBILE MENU BUTTON */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden relative z-50 p-2 rounded-lg hover:bg-white/10 transition"
@@ -756,7 +712,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* MOBILE MENU OVERLAY */}
+      {/* MOBILE MENU OVERLAY - FIXED OVERLAPPING ISSUE */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -769,16 +725,28 @@ const Navbar = () => {
               onClick={() => setMobileOpen(false)}
             />
             
-            {/* Mobile Menu Panel */}
+            {/* Mobile Menu Panel - Fixed positioning and padding */}
             <motion.div
               ref={mobileMenuRef}
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-sm bg-black/95 backdrop-blur-xl border-l border-gray-800 z-40 md:hidden overflow-y-auto"
+              className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-black/95 backdrop-blur-xl border-l border-gray-800 z-40 md:hidden overflow-y-auto"
             >
-              <div className="flex flex-col p-6 pt-24">
+              {/* Safe area padding for modern phones (notch/dynamic island) */}
+              <div className="min-h-full pt-16 pb-8 px-6">
+                {/* Close button at top right */}
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition"
+                  aria-label="Close menu"
+                >
+                  <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
                 {/* Mobile Search Bar */}
                 {user && token && (
                   <div className="relative mb-6">
@@ -801,7 +769,6 @@ const Navbar = () => {
                               key={u._id}
                               to={`/profile/${u._id}`}
                               onClick={() => {
-                                setSearchOpen(false);
                                 setSearchTerm("");
                                 setMobileOpen(false);
                               }}
@@ -899,7 +866,8 @@ const Navbar = () => {
                 {/* Mobile Notification Bell */}
                 {user && token && (
                   <div className="border-t border-gray-800 mt-6 pt-6">
-                    <div className="px-4">
+                    <div className="flex items-center justify-between px-4">
+                      <span className="text-gray-400 text-sm">Notifications</span>
                       <NotificationBell token={token} />
                     </div>
                   </div>
