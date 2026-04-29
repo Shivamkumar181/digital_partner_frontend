@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { getAvatarUrl } from "../../utils/helpers";
 import { motion } from "framer-motion";
-import { Briefcase, Clock, DollarSign, Users, Zap } from "lucide-react";
+import { Briefcase, Clock, DollarSign, Users, Zap, IndianRupee } from "lucide-react";
 
 const categoryColors = {
   "web development": {
@@ -168,6 +168,7 @@ const ProjectCard = ({ project, index }) => {
             {/* Budget */}
             <div className="flex items-baseline gap-1 mb-3">
               <DollarSign size={14} className="text-purple-400" />
+              <IndianRupee size={14} className="text-purple-400"/>
               <span className="text-lg font-bold text-purple-400">
                 ${Number(project.budget).toLocaleString()}
               </span>
